@@ -21,15 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
         children.forEach(function(bookmark) {
           var stache = document.createElement('button')
           stache.setAttribute('value', bookmark.id)
-          stache.addEventListener('click', function() {
-            console.log(stache.value);
-            chrome.bookmarks.getChildren(stache.value, function(children) {
-               children.forEach(function(bookmark) {
-                 chrome.tabs.create({url: bookmark.url})
-               });
-               chrome.bookmarks.removeTree(stache.value);
-            });
-          });
+          stache.addEventListener('click', unload_stache);
           stache.appendChild(document.createTextNode(bookmark.title))
           stache_list.appendChild(stache)
         });
@@ -39,24 +31,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
   new_stache.addEventListener('keyup', function (e) {
     if ((e.keyCode == 13) && (new_stache.value)) {
-      console.log(new_stache.value);
       chrome.bookmarks.create({
         'parentId': tabStacheId,
         'title': new_stache.value
-      }, function(node) {
-        chrome.tabs.getAllInWindow(null, function(tabs) {
-          chrome.tabs.create({});
-          for (var i in tabs) {
-            chrome.bookmarks.create({
-                  'parentId': node.id,
-                  'title': tabs[i].title,
-                  'url': tabs[i].url})
-            chrome.tabs.remove(tabs[i].id);
-          }
-        })
-      })
+      }, load_stache)
       new_stache.value = "";
     }
   });
 
+  function load_stache(node) {
+    chrome.tabs.getAllInWindow(null, function(tabs) {
+      chrome.tabs.create({});
+      for (var i in tabs) {
+        chrome.bookmarks.create({
+          'parentId': node.id,
+          'title': tabs[i].title,
+          'url': tabs[i].url})
+        chrome.tabs.remove(tabs[i].id);
+      }
+    })
+  };
+
+  function unload_stache() {
+    _this = this;
+    chrome.bookmarks.getChildren(this.value, function(children) {
+       children.forEach(function(bookmark) {
+         chrome.tabs.create({url: bookmark.url})
+       });
+       chrome.bookmarks.removeTree(_this.value);
+    });
+  };
 }, false);
