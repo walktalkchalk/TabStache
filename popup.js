@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
           stache.setAttribute('class', 'stache');
           stache.addEventListener('click', unload_stache);
           stache.appendChild(document.createTextNode(bookmark.title));
-          var li = document.createElement('li');
+          var li = document.createElement('article');
           li.appendChild(stache);
           stache_list.appendChild(li);
         });
