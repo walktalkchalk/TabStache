@@ -45,7 +45,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function load_stache(node) {
     chrome.tabs.getAllInWindow(null, function(tabs) {
       chrome.tabs.create({});
+      var urls = tabs.map(function(tab) { return tab.url; });
       for (var i in tabs) {
+      	// some tabs should be ignored
+      	// 1. ignore dublicate tabs
+      	if(urls.indexOf(tabs[i].url) < i)
+      		continue;
+      	// 2. ignore some specified types of tabs
+      	if(tabs[i].url.startsWith("chrome-extension://") || tabs[i].url.startsWith("chrome://") || tabs[i].url.startsWith("about:blank"))
+    		continue;
         chrome.bookmarks.create({
           'parentId': node.id,
           'title': tabs[i].title,
