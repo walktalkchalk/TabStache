@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function load_stache(node) {
     chrome.tabs.getAllInWindow(null, function(tabs) {
       chrome.tabs.create({});
-      var urls = tabs.map(function(tab) { return tab.url; });
+      var urls = tabs.map(tab => tab.url);
       for (var i in tabs) {
       	// some tabs should be ignored
       	// 1. ignore dublicate tabs
@@ -64,12 +64,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function unload_stache() {
-    _this = this;
-    chrome.bookmarks.getChildren(this.value, function(children) {
+    chrome.bookmarks.getChildren(this.value, (children) => {
        children.forEach(function(bookmark) {
          chrome.tabs.create({url: bookmark.url});
        });
-       chrome.bookmarks.removeTree(_this.value);
+       chrome.bookmarks.removeTree(this.value);
     });
   }
 }, false);
