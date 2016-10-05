@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   chrome.bookmarks.search({'title':'TabStache_base'}, (results)=> {
     if (results.length === 0) {
       chrome.bookmarks.getTree((tree)=>{
-          let otherBookmarksID = tree[0].children[1].id;
+          const otherBookmarksID = tree[0].children[1].id;
           chrome.bookmarks.create({
             'parentId': otherBookmarksID,
             'title': 'TabStache_base'
