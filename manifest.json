@@ -3,7 +3,7 @@
 
   "name": "TabStache",
   "description": "This extension stashes the current tab session",
-  "version": "1.0",
+  "version": "0.1",
   "icons": {
     "128": "icon.png"
   },
