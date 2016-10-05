@@ -6,9 +6,12 @@
     <script src="popup.js"></script>
   </head>
   <body>
-    <h1>TabStache</h1>
-    <input id="new_stache" placeholder="New stache...">
+    <div class="input-div" onsubmit="new_stache()">
+      <input id="new_stache" placeholder="New stache..." type="text">
+      <button id="submit_button">create</button>
+    </div>
     <section id="stache_list">
     </section>
+    <h1>TabStache</h1>
   </body>
 </html>
