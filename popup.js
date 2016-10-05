@@ -2,6 +2,7 @@ var tabStacheId = '0';
 
 document.addEventListener('DOMContentLoaded', function() {
   var new_stache = document.getElementById('new_stache');
+  var submit_button = document.getElementById('submit_button');
   var stache_list = document.getElementById('stache_list');
 
   chrome.bookmarks.search({'title':'TabStache_base'}, function(results) {
@@ -34,13 +35,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
   new_stache.addEventListener('keyup', function (e) {
     if ((e.keyCode == 13) && (new_stache.value)) {
-      chrome.bookmarks.create({
-        'parentId': tabStacheId,
-        'title': new_stache.value
-      }, load_stache);
-      new_stache.value = "";
+      add_stache();
     }
   });
+
+  submit_button.addEventListener('click', function() {
+    if (new_stache.value) {
+      add_stache();
+    }
+  });
+
+  function add_stache(){
+    chrome.bookmarks.create({
+      'parentId': tabStacheId,
+      'title': new_stache.value
+    }, load_stache);
+    new_stache.value = "";
+  }
 
   function load_stache(node) {
     chrome.tabs.getAllInWindow(null, function(tabs) {
