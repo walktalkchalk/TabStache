@@ -11,3 +11,6 @@ A chrome extension for saving and recalling tabs in a stash
 #### Alternatively, you can drag and drop the directory where your extension files live onto `chrome://extensions` in your browser to load it.
 
 ##### Extensions that you download from the Chrome Web Store are packaged up as .crx files, which is great for distribution, but not so great for development. You can pack the extension in `chrome://extensions`, you should be able to find a pack extension button.
+
+## Install from Chrome Web Store
+If you just want the current release version, you can find and install it [here](https://chrome.google.com/webstore/detail/tabstache/cdlckcaiagllfabcbipekececjgngbjo?utm_source=gh-readme).
