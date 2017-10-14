@@ -95,7 +95,6 @@ const TabStache = {
     const self = this;
     return function() {
       self.chromeBookmarkObj.getChildren(this.value, (children) => {
-        console.log(children);
         children.forEach((bookmark) => {
           self.chromeTabsObj.create({
             url: bookmark.url
