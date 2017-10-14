@@ -1,6 +1,6 @@
 const TabStache = {
   new_stache: null,
-  submit_buttom: null,
+  submit_button: null,
   stache_list: null,
   tabStacheId: 0,
   chromeBookmarkObj: null,
@@ -12,26 +12,26 @@ const TabStache = {
    */
   DOMApi: null,
 
-  initializeEmptyStache: (chromeBookmarkObj) => {
-    chromeBookmarkObj.getTree((tree) => {
+  initializeEmptyStache: function () {
+    this.chromeBookmarkObj.getTree((tree) => {
       const otherBookmarksID = tree[0].children[1].id;
       this.chromeBookmarkObj.create({
         'parentId': otherBookmarksID,
         'title': 'TabStache_base'
       }, (node) => {
-        this.tabStaceId = node.id;
+        this.tabStacheId = node.id;
       });
     });
   },
 
-  populateStacheList: (results) => {
+  populateStacheList: function (results) {
     this.tabStacheId = results[0].id;
-    this.chromeBookmarkObj.getChildren((children) => {
+    this.chromeBookmarkObj.getChildren(this.tabStacheId, (children) => {
       children.forEach((bookmark) => {
         let stache = document.createElement('button');
         stache.setAttribute('value', bookmark.id);
         stache.setAttribute('class', 'stache');
-        stache.addEventListener('click', this.unload_stache);
+        stache.addEventListener('click', this.unload_stache());
         stache.appendChild(document.createTextNode(bookmark.title));
         let li = document.createElement('article');
         li.appendChild(stache);
@@ -44,54 +44,58 @@ const TabStache = {
    * @param {Object} chromeBookmarkObj An object that implements the
    * interface of chrome bookmark object
    */
-  genSearchResult: (chromeBookmarkObj) => {
+  genSearchResult: function () {
     return (results) => {
       if (results.length === 0) {
-        this.initializeEmptyStache(chromeBookmarkObj);
+        this.initializeEmptyStache();
       } else {
-        this.populateStacheList();
+        this.populateStacheList(results);
       }
     };
   },
 
-  add_stache: () => {
+  add_stache: function() {
     this.chromeBookmarkObj.create({
       'parentId': this.tabStacheId,
       'title': this.new_stache.value
-    },this.load_stache);
+    },this.load_stache());
     this.new_stache.value = "";
   },
 
-  load_stache: (node) => {
-    this.chromeTabsObj.getAllInWindow(null, (tabs) => {
-      let urls = tabs.map(tab => tab.url);
-      for (let i in tabs) {
-        // some tabs should be ignored
-        // 1. ignore dublicate tabs
-        if (urls.indexOf(tabs[i].url) < i) {
-          this.chromeTabsObj.remove(tabs[i].id);
-          continue;
+  load_stache: function () {
+    const self = this;
+    return (node) => {
+      self.chromeTabsObj.getAllInWindow(null, (tabs) => {
+        let urls = tabs.map(tab => tab.url);
+        for (let i in tabs) {
+          // some tabs should be ignored
+          // 1. ignore dublicate tabs
+          if (urls.indexOf(tabs[i].url) < i) {
+            self.chromeTabsObj.remove(tabs[i].id);
+            continue;
+          }
+          // 2. ignore some specified types of tabs
+          if (tabs[i].url.startsWith("chrome-extension://") || tabs[i].url.startsWith("chrome://") || tabs[i].url.startsWith("about:blank")) {
+            self.chromeTabsObj.remove(tabs[i].id);
+            continue;
+          }
+          self.chromeBookmarkObj.create({
+            'parentId': node.id,
+            'title': tabs[i].title,
+            'url': tabs[i].url
+          });
+          self.chromeTabsObj.remove(tabs[i].id);
         }
-        // 2. ignore some specified types of tabs
-        if (tabs[i].url.startsWith("chrome-extension://") || tabs[i].url.startsWith("chrome://") || tabs[i].url.startsWith("about:blank")) {
-          this.chromeTabsObj.remove(tabs[i].id);
-          continue;
-        }
-        this.chromeBookmarkObj.create({
-          'parentId': node.id,
-          'title': tabs[i].title,
-          'url': tabs[i].url
-        });
-        this.chromeTabsObj.remove(tabs[i].id);
-      }
-      this.chromeTabsObj.create({ 'url': 'about:blank' });
-    });
+        self.chromeTabsObj.create({ 'url': 'about:blank' });
+      });
+    };
   },
 
-  unload_stache: () => {
+  unload_stache: function() {
     const self = this;
-    return () => {
+    return function() {
       self.chromeBookmarkObj.getChildren(this.value, (children) => {
+        console.log(children);
         children.forEach((bookmark) => {
           self.chromeTabsObj.create({
             url: bookmark.url
@@ -102,31 +106,31 @@ const TabStache = {
     };
   },
 
-  listenNewStache: (event, cb) => {
+  listenNewStache: function (event, cb) {
     this.new_stache.addEventListener(event, cb);
   },
 
-  listenSubmitButton: (event, cb) => {
-    this.submit_buttom.addEventListener(event, cb);
+  listenSubmitButton: function (event, cb) {
+    this.submit_button.addEventListener(event, cb);
   },
 
-  setCacheList: (stacheList) => {
+  setCacheList: function (stacheList) {
     this.stache_list = stacheList;
   },
 
-  setNewStache: (newStache) => {
+  setNewStache: function (newStache) {
     this.new_stache = newStache;
   },
 
-  setSubmitButton: (submitButton) => {
+  setSubmitButton: function (submitButton) {
     this.submit_button = submitButton;
   },
 
-  setChromeBookmarks: (chromeBookmarks) => {
+  setChromeBookmarks: function (chromeBookmarks) {
     this.chromeBookmarkObj = chromeBookmarks;
   },
   
-  setChromeTabs: (chromeTabs) => {
+  setChromeTabs: function (chromeTabs) {
     this.chromeTabsObj = chromeTabs;
   }
 };

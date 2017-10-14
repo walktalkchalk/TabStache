@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   stache.setChromeTabs(chrome.tabs);
   chrome.bookmarks.search({
       'title': 'TabStache_base'
-  }, stache.genSearchResult(chrome.bookmarks));
+  }, stache.genSearchResult());
 
   stache.listenNewStache('keyup', (e) => {
     if ((e.keyCode == 13) && (stache.new_stache.value)) {
